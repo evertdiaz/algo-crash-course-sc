@@ -20,9 +20,17 @@ def sub_add(a: abi.Uint64, b: abi.Uint64) -> Expr:
   return a.get() + b.get()
 
 @app.external
-def add(a: abi.Uint64, b: abi.Uint64, *, output: abi.Uint64) -> Expr:
+def add(
+  p: abi.PaymentTransaction, 
+  a: abi.Uint64, b: abi.Uint64, 
+  *, 
+  output: abi.Uint64
+  ) -> Expr:
   result = sub_add(a,b)
   return Seq(
+    Assert(Global.creator_address() != Txn.sender()),
+    Assert(Global.current_application_address() == p.get().receiver()),
+    Assert(p.get().amount() >= Int(100000)),
     app.state.global_sum.set(result),
     app.state.local_sum[Txn.sender()].set(result),
     output.set(result)
