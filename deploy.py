@@ -1,4 +1,4 @@
-from app import app, hello
+from app import app
 from beaker import sandbox, client
 
 app.build().export("./artifacts")
@@ -13,7 +13,6 @@ app_client = client.ApplicationClient(
     signer=sender.signer,
 )
 
-app_client.create()
+app_id, app_addr, txid = app_client.create()
 
-return_value = app_client.call(hello, name="Beaker").return_value
-print(return_value)
+print(f"App ID {app_id}")
